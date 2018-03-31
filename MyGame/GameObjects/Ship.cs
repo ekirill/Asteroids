@@ -8,8 +8,10 @@ namespace MyGame.GameObjects
     /// </summary>
     public class Ship: Core.BaseGameObject, ICollision, IDie
     {
+        private const int MaxEnergy = 100;
+
         private Core.MoveDirection? moving;
-        private int _energy = 100;
+        private int _energy = MaxEnergy;
         public int Energy => _energy;
 
         static private Bitmap image; // placing image at static var for memory improvement
@@ -41,7 +43,7 @@ namespace MyGame.GameObjects
             };
 
             // handling shooting
-            Game.ShootKeyPressed += () => ShootDone?.Invoke(new Point(this.Pos.X + this.Size.Width, this.Pos.Y));
+            Game.ShootKeyPressed += () => ShootDone?.Invoke(new Point(this.Pos.X + this.Size.Width, this.Pos.Y + this.Size.Height / 2));
         }
 
         public override void Draw()
@@ -74,6 +76,16 @@ namespace MyGame.GameObjects
         }
 
         /// <summary>
+        /// Increase ship energy by n
+        /// </summary>
+        public void EnergyIncrease(int n)
+        {
+            _energy += n;
+            if (_energy > MaxEnergy) _energy = MaxEnergy;
+            EnergyChanged?.Invoke();
+        }
+
+        /// <summary>
         /// Move up
         /// </summary>
         public void Up()
@@ -103,6 +115,11 @@ namespace MyGame.GameObjects
             {
                 Asteroid asteroid = obj as Asteroid;
                 EnergyDecrease(asteroid.Power);
+            }
+            else if (obj is Aid)
+            {
+                Aid aid = obj as Aid;
+                EnergyIncrease(aid.Power);
             }
         }
         public Rectangle Rect => new Rectangle(Pos, Size);

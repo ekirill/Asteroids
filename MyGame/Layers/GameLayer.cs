@@ -10,13 +10,19 @@ namespace MyGame.Layers
     class GameLayer : BaseLayer
     {
         public const int MaxBullets = 5;
+
         public const int MaxAsteroids = 10;
         public const int MaxAsteroidSpeed = 10;
         public const int MinAsteroidSize = 10;
         public const int MaxAsteroidSize = 20;
 
+        public const int MaxAids = 2;
+        public const int MaxAidSpeed = 10;
+
         private List<GameObjects.Bullet> _bullets;
         private List<GameObjects.Asteroid> _asteroids;
+        private List<GameObjects.Aid> _aids;
+
         private GameObjects.Ship _ship;
 
         public event Core.GameOverHandler GameOverOccured;
@@ -29,8 +35,10 @@ namespace MyGame.Layers
 
             _asteroids = new List<GameObjects.Asteroid>(MaxAsteroids);
             _bullets = new List<GameObjects.Bullet>(MaxBullets);
+            _aids = new List<GameObjects.Aid>(MaxAids);
 
             for (var i = 0; i < MaxAsteroids; i++) _asteroids.Add(GenerateAsteroid());
+            for (var i = 0; i < MaxAids; i++) _aids.Add(GenerateAid());
 
             _ship = new GameObjects.Ship(new Point(10, 400), new Point(10, 10), new Size(30, 30));
             _ship.ShootDone += _ship_ShootDone;
@@ -80,6 +88,30 @@ namespace MyGame.Layers
             return asteroid;
         }
 
+        private GameObjects.Aid GenerateAid()
+        {
+            // new aids should not appear near the ship
+            Point pos = new Point(Game.rnd.Next(50) + (Game.Width - 50), Game.rnd.Next(Game.Height));
+            Point dir = new Point(-10, Game.rnd.Next(MaxAidSpeed * 2) - MaxAidSpeed);
+            Size size = new Size(20, 20);
+
+            GameObjects.Aid aid = new GameObjects.Aid(pos, dir, size);
+
+            aid.Died += (obj) => 
+            {
+                GameObjects.Aid diedObj = obj as GameObjects.Aid;
+                AidDied(diedObj);
+            };
+
+            return aid;
+        }
+
+        private void AidDied(GameObjects.Aid aid)
+        {
+            _aids.Remove(aid);
+            _aids.Add(GenerateAid());
+        }
+
         private void AsteroidShot(GameObjects.Asteroid asteroid)
         {
             AsteroidShoot?.Invoke(asteroid);
@@ -94,6 +126,8 @@ namespace MyGame.Layers
                 asteroid.Draw();
             foreach (GameObjects.Bullet bullet in _bullets)
                 bullet.Draw();
+            foreach (GameObjects.Aid aid in _aids)
+                aid.Draw();
             _ship?.Draw();
         }
 
@@ -111,12 +145,12 @@ namespace MyGame.Layers
             GameObjects.Asteroid[] tmp_asteroids = _asteroids.ToArray();
             for (int j = 0; j < tmp_asteroids.Length; j++)
             {
-                GameObjects.Asteroid asteroid  = tmp_asteroids[j];
+                GameObjects.Asteroid asteroid = tmp_asteroids[j];
                 asteroid.Update();
 
                 // collision with ship
                 if (_ship != null && asteroid.Collision(_ship))
-                { 
+                {
                     _ship.CollisionOccured(asteroid);
                     asteroid.CollisionOccured(_ship);
                 }
@@ -128,6 +162,31 @@ namespace MyGame.Layers
                     {
                         asteroid.CollisionOccured(tmp_bullets[i]);
                         tmp_bullets[i].CollisionOccured(asteroid);
+                    }
+            }
+
+            // processing collisions with aids
+            GameObjects.Aid[] tmp_aids = _aids.ToArray();
+            GameObjects.Aid aid;
+            for (int i = 0; i < tmp_aids.Length; i++)
+            {
+                aid = tmp_aids[i];
+                aid.Update();
+
+                // collision with ship
+                if (_ship != null && aid.Collision(_ship))
+                {
+                    aid.CollisionOccured(_ship);
+                    _ship.CollisionOccured(aid);
+                }
+
+                // collision with bullet
+                tmp_bullets = _bullets.ToArray();
+                for (int j = 0; j < tmp_bullets.Length; j++)
+                    if (aid.Collision(tmp_bullets[j]))
+                    {
+                        aid.CollisionOccured(tmp_bullets[j]);
+                        tmp_bullets[j].CollisionOccured(aid);
                     }
             }
         }

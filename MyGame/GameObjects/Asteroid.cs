@@ -6,7 +6,7 @@ namespace MyGame.GameObjects
     /// <summary>
     /// An asteroid object.
     /// </summary>
-    public class Asteroid : Core.BaseGameObject, ICollision, ICloneable, IComparable<Asteroid>, IDie
+    public class Asteroid: Core.BaseGameObject, ICollision, ICloneable, IComparable<Asteroid>, IDie
     {
         public int Power { get; set; } = 3; // Начиная с версии C# 6.0 была добавлена такая функциональность, как инициализация автосвойств
         static private Bitmap image; // placing image at static var for memory improvement
