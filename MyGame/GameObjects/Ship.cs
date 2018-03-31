@@ -15,7 +15,9 @@ namespace MyGame.GameObjects
         static private Bitmap image; // placing image at static var for memory improvement
 
         public event ShipShootingHandler ShootDone;
-        
+        public event ShipEnergyChangeHandler EnergyChanged;
+
+
         static Ship()
         {
             image = new Bitmap(@"..\\..\\ship.png");
@@ -66,6 +68,9 @@ namespace MyGame.GameObjects
         public void EnergyDecrease(int n)
         {
             _energy -= n;
+            if (_energy < 1) _energy = 0;
+            EnergyChanged?.Invoke();
+            if (_energy == 0) Die();
         }
 
         /// <summary>
@@ -96,7 +101,8 @@ namespace MyGame.GameObjects
         {
             if (obj is Asteroid)
             {
-                Die();
+                Asteroid asteroid = obj as Asteroid;
+                EnergyDecrease(asteroid.Power);
             }
         }
         public Rectangle Rect => new Rectangle(Pos, Size);

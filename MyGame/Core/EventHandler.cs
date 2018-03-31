@@ -10,4 +10,6 @@ namespace MyGame.Core
 
     public delegate void MoveKeyHandler(MoveDirection direction);
     public delegate void ShootKeyHandler();
+
+    public delegate void GameOverHandler();
 }

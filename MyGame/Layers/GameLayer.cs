@@ -5,7 +5,7 @@ using System.Drawing;
 namespace MyGame.Layers
 {
     /// <summary>
-    /// The main layer for representing gameplay objects. Game logic should be implemented here.
+    /// The main layer for representing gameplay objects.
     /// </summary>
     class GameLayer : BaseLayer
     {
@@ -18,6 +18,10 @@ namespace MyGame.Layers
         private List<GameObjects.Bullet> _bullets;
         private List<GameObjects.Asteroid> _asteroids;
         private GameObjects.Ship _ship;
+
+        public event Core.GameOverHandler GameOverOccured;
+        public event GameObjects.ShipEnergyChangeHandler ShipEnergyChanged;
+        public event GameObjects.AsteroidShootHandler AsteroidShoot;
 
         public GameLayer(Core.DebugLog debug) : base(debug)
         {
@@ -33,8 +37,9 @@ namespace MyGame.Layers
             _ship.Died += (obj) =>
             {
                 debug("Game over");
-                Game.GameOver();
+                GameOverOccured?.Invoke();
             };
+            _ship.EnergyChanged += () => ShipEnergyChanged?.Invoke();
         }
 
         private void _ship_ShootDone(Point shootingPos)
@@ -69,14 +74,15 @@ namespace MyGame.Layers
             asteroid.Died += (obj) =>
             {
                 GameObjects.Asteroid diedObj = obj as GameObjects.Asteroid;
-                AsteroidShooted(diedObj);
+                AsteroidShot(diedObj);
             };
 
             return asteroid;
         }
 
-        private void AsteroidShooted(GameObjects.Asteroid asteroid)
+        private void AsteroidShot(GameObjects.Asteroid asteroid)
         {
+            AsteroidShoot?.Invoke(asteroid);
             _asteroids.Remove(asteroid);
             _asteroids.Add(GenerateAsteroid());
             this.debug("Asteroid destroyed");
@@ -110,7 +116,10 @@ namespace MyGame.Layers
 
                 // collision with ship
                 if (_ship != null && asteroid.Collision(_ship))
+                { 
                     _ship.CollisionOccured(asteroid);
+                    asteroid.CollisionOccured(_ship);
+                }
 
                 // collision with bullet
                 tmp_bullets = _bullets.ToArray();
@@ -122,5 +131,7 @@ namespace MyGame.Layers
                     }
             }
         }
+
+        public int ShipEnergy() => _ship?.Energy ?? 0;
     }
 }

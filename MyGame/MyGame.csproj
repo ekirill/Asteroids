@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="Core\GameObjectException.cs" />
     <Compile Include="Core\Logger.cs" />
-    <Compile Include="Core\UserEventHandler.cs" />
+    <Compile Include="Core\EventHandler.cs" />
     <Compile Include="GameObjects\Asteroid.cs" />
     <Compile Include="Core\BaseGameObject.cs" />
     <Compile Include="GameObjects\Bullet.cs" />
@@ -57,8 +57,9 @@
     <Compile Include="GameObjects\ICollision.cs" />
     <Compile Include="GameObjects\IDie.cs" />
     <Compile Include="GameObjects\Ship.cs" />
-    <Compile Include="GameObjects\ShipHandlers.cs" />
+    <Compile Include="GameObjects\GameObjectHandlers.cs" />
     <Compile Include="Layers\GameLayer.cs" />
+    <Compile Include="Layers\StatusLine.cs" />
     <Compile Include="Scenes\GameScene.cs" />
     <Compile Include="UIComponents\BaseButton.cs" />
     <Compile Include="Game.cs" />

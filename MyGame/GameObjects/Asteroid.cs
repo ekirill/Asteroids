@@ -6,7 +6,7 @@ namespace MyGame.GameObjects
     /// <summary>
     /// An asteroid object.
     /// </summary>
-    class Asteroid : Core.BaseGameObject, ICollision, ICloneable, IComparable<Asteroid>, IDie
+    public class Asteroid : Core.BaseGameObject, ICollision, ICloneable, IComparable<Asteroid>, IDie
     {
         public int Power { get; set; } = 3; // Начиная с версии C# 6.0 была добавлена такая функциональность, как инициализация автосвойств
         static private Bitmap image; // placing image at static var for memory improvement
@@ -24,7 +24,7 @@ namespace MyGame.GameObjects
         /// <param name="size">Size of an asteroid.</param>
         public Asteroid(Point pos, Point dir, Size size) : base(pos, dir, size)
         {
-            Power = (size.Width * Size.Height) / 2;
+            Power = (size.Width * Size.Height) / 10;
         }
 
         public override void Draw()
@@ -52,7 +52,7 @@ namespace MyGame.GameObjects
         // ICollision implementation
         public void CollisionOccured(ICollision obj)
         {
-            if (obj is Bullet)
+            if (obj is Bullet || obj is Ship)
             {
                 this.Die();
             }
