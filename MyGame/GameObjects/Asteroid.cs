@@ -13,7 +13,7 @@ namespace MyGame.GameObjects
 
         static Asteroid()
         {
-            image = new Bitmap(@"..\\..\\asteroid.png");
+            image = new Bitmap(Properties.Resources.asteroid);
         }
 
         /// <summary>

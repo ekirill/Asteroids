@@ -17,7 +17,7 @@ namespace MyGame.GameObjects
         {
             if (dir.X >= 0) throw new ArgumentOutOfRangeException();
 
-            image = new Bitmap(@"..\\..\\aid.png");
+            image = new Bitmap(Properties.Resources.aid);
         }
 
         public override void Draw()

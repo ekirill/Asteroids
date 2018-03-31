@@ -22,7 +22,7 @@ namespace MyGame.GameObjects
 
         static Ship()
         {
-            image = new Bitmap(@"..\\..\\ship.png");
+            image = new Bitmap(Properties.Resources.ship);
         }
 
         /// <summary>
