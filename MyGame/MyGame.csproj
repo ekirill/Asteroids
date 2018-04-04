@@ -100,15 +100,6 @@
     <None Include="Resources\asteroid.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="asteroid.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="aid.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ship.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Images\aid.png" />
   </ItemGroup>
   <ItemGroup>
