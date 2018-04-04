@@ -11,16 +11,19 @@ namespace MyGame.Layers
     {
         public const int MaxBullets = 5;
 
-        public const int MaxAsteroids = 10;
+        public const int StartAsteroidsCount = 3;
         public const int MaxAsteroidSpeed = 10;
-        public const int MinAsteroidSize = 10;
+        public const int MinAsteroidSize = 15;
         public const int MaxAsteroidSize = 20;
 
         public const int MaxAids = 2;
         public const int MaxAidSpeed = 10;
 
         private List<GameObjects.Bullet> _bullets;
+
         private List<GameObjects.Asteroid> _asteroids;
+        private int _asteroids_count;
+
         private List<GameObjects.Aid> _aids;
 
         private GameObjects.Ship _ship;
@@ -33,11 +36,13 @@ namespace MyGame.Layers
         {
             debug("Game started");
 
-            _asteroids = new List<GameObjects.Asteroid>(MaxAsteroids);
+            _asteroids = new List<GameObjects.Asteroid>(StartAsteroidsCount);
             _bullets = new List<GameObjects.Bullet>(MaxBullets);
             _aids = new List<GameObjects.Aid>(MaxAids);
 
-            for (var i = 0; i < MaxAsteroids; i++) _asteroids.Add(GenerateAsteroid());
+            _asteroids_count = StartAsteroidsCount;
+            UpdateAsteroids();
+            
             for (var i = 0; i < MaxAids; i++) _aids.Add(GenerateAid());
 
             _ship = new GameObjects.Ship(new Point(10, 400), new Point(10, 10), new Size(30, 30));
@@ -67,6 +72,11 @@ namespace MyGame.Layers
 
             _bullets.Add(bullet);
             this.debug("Shoot done");
+        }
+
+        private void UpdateAsteroids()
+        {
+            for (var i = 0; i < _asteroids_count; i++) _asteroids.Add(GenerateAsteroid());
         }
 
         private GameObjects.Asteroid GenerateAsteroid()
@@ -116,8 +126,14 @@ namespace MyGame.Layers
         {
             AsteroidShoot?.Invoke(asteroid);
             _asteroids.Remove(asteroid);
-            _asteroids.Add(GenerateAsteroid());
             this.debug("Asteroid destroyed");
+
+            if (_asteroids.Count == 0)
+            {
+                this.debug("All asteroids dead, updating all");
+                _asteroids_count += 1;
+                UpdateAsteroids();
+            }
         }
 
         public override void Draw()
